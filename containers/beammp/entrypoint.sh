@@ -7,20 +7,19 @@ echo "testing wsg guys"
 MODIFIED_STARTUP=$(eval echo "$(echo "${STARTUP}" | sed -e 's/{{/${/g' -e 's/}}/}/g')")
 echo ":/home/container$ ${MODIFIED_STARTUP}"
 
-# Run the Server in background
-${MODIFIED_STARTUP} &
-SERVER_PID=$!
+# Trap to handle cleanup after BeamMP exits
+cleanup() {
+    # Give it a moment to fully exit
+    sleep 3
+    # Force kill any remaining processes
+    pkill -9 -f BeamMP-Server 2>/dev/null || true
+    exit 0
+}
 
-# Wait for the server, but with a timeout for cleanup
-wait $SERVER_PID
+trap cleanup EXIT
 
-# After wait returns, give the process 5 seconds to fully exit
-# If it's still hanging, force kill it
-sleep 2
-if kill -0 $SERVER_PID 2>/dev/null; then
-    echo "Server still running after shutdown, forcing termination..."
-    kill -9 $SERVER_PID 2>/dev/null
-fi
+# Run the Server in foreground so it receives stdin
+${MODIFIED_STARTUP}
 
-echo "BeamMP process ended, script exiting..."
-exit 0
+# If we get here, the server exited, run cleanup
+cleanup
