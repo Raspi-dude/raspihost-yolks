@@ -35,4 +35,4 @@ jobs:
         with:
           context: containers/beammp
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/${{ github.repository }}:alpine-beammp
