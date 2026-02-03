@@ -7,7 +7,15 @@ echo "testing wsg guys"
 MODIFIED_STARTUP=$(eval echo "$(echo "${STARTUP}" | sed -e 's/{{/${/g' -e 's/}}/}/g')")
 echo ":/home/container$ ${MODIFIED_STARTUP}"
 
-# Run the Server
+# Function to forward signals to the server
+forward_signal() {
+    kill -TERM "$SERVER_PID" 2>/dev/null
+}
+
+# Set up signal trapping
+trap forward_signal SIGTERM SIGINT
+
+# Run the Server in background
 eval ${MODIFIED_STARTUP} &
 SERVER_PID=$!
 
