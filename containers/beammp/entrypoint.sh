@@ -1,15 +1,19 @@
 #!/bin/bash
 cd /home/container
 
+echo "testing wsg guys"
+
+# Replace Startup Variables
 MODIFIED_STARTUP=$(eval echo "$(echo "${STARTUP}" | sed -e 's/{{/${/g' -e 's/}}/}/g')")
 echo ":/home/container$ ${MODIFIED_STARTUP}"
 
-# Watchdog: After 10 seconds of inactivity post-shutdown, force kill
-(sleep 10; pkill -9 -f "BeamMP-Server") &
-KILLER_PID=$!
+# Run the Server
+eval ${MODIFIED_STARTUP} &
+SERVER_PID=$!
 
-eval ${MODIFIED_STARTUP}
+# Wait for the server process to finish
+wait $SERVER_PID
+EXIT_CODE=$?
 
-# If server exits cleanly, kill the watchdog  
-kill $KILLER_PID 2>/dev/null
-exit 0
+echo "Server exited with code ${EXIT_CODE}"
+exit ${EXIT_CODE}
