@@ -1,4 +1,4 @@
-FROM        --platform=$TARGETOS/$TARGETARCH alpine:3.23.3
+FROM        alpine:3.23.3
 
 LABEL       author="Raspi_dude" maintainer="raspi@raspihost.org"
 
