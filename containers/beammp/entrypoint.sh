@@ -10,8 +10,11 @@ eval ${MODIFIED_STARTUP} 2>&1 | while IFS= read -r line; do
     
     # Look for shutdown message, but NOT if the line contains [CHAT]
     if echo "$line" | grep -q "\[INFO\] Shutdown\." && ! echo "$line" | grep -q "\[CHAT\]"; then
-        (sleep 2; pkill -9 -f "BeamMP-Server") &
+        (sleep 2; pkill -9 -f "BeamMP-Server" 2>/dev/null) &
     fi
 done
+
+# Suppress the "Killed" message
+wait 2>/dev/null
 
 exit 0
