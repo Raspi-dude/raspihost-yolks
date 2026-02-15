@@ -192,36 +192,47 @@ esac
 
 echo "Downloading latest BeamMP server for architecture: $ARCH"
 
+# Try to get download URL from GitHub API
 DOWNLOAD_URL=$(
-  curl -fsSL https://api.github.com/repos/raspi-dude/BeamMP-Server-Alpine-Linux/releases/latest \
+  curl -fsSL https://api.github.com/repos/raspi-dude/BeamMP-Server-Alpine-Linux/releases/latest 2>/dev/null \
   | grep browser_download_url \
   | grep "$MATCH" \
   | head -n 1 \
   | cut -d '"' -f 4
 )
 
+# If GitHub API fails or returns empty, go straight to fallback
 if [ -z "$DOWNLOAD_URL" ]; then
-    echo "Error: Failed to find BeamMP binary from GitHub."
-    echo "Expected asset containing: $MATCH"
-    exit 1
-fi
-
-# Try downloading from GitHub
-HTTP_CODE=$(curl -fsSL -w "%{http_code}" "$DOWNLOAD_URL" -o BeamMP-Server 2>/dev/null)
-
-# If GitHub fails (403 rate limit or other error), fall back to assets server
-if [ "$HTTP_CODE" != "200" ]; then
-    echo "GitHub download failed (HTTP $HTTP_CODE), falling back to assets.raspihost.org..."
-    rm -f BeamMP-Server
-    
+    echo "GitHub API failed or rate limited, using fallback server..."
     FALLBACK_URL="https://assets.raspihost.org/files/$MATCH"
     
     if ! curl -fsSL "$FALLBACK_URL" -o BeamMP-Server; then
-        echo "Error: Both GitHub and fallback server failed to download BeamMP binary."
+        echo "Error: Fallback server failed to download BeamMP binary."
         exit 1
     fi
     
     echo "Successfully downloaded from fallback server!"
+else
+    # Try downloading from GitHub
+    echo "Attempting download from GitHub..."
+    HTTP_CODE=$(curl -fsSL -w "%{http_code}" "$DOWNLOAD_URL" -o BeamMP-Server 2>/dev/null)
+    
+    # If GitHub download fails, fall back to assets server
+    if [ "$HTTP_CODE" != "200" ]; then
+        echo "GitHub download failed (HTTP $HTTP_CODE), falling back to assets.raspihost.org..."
+        rm -f BeamMP-Server
+        
+        FALLBACK_URL="https://assets.raspihost.org/files/$MATCH"
+        
+        if ! curl -fsSL "$FALLBACK_URL" -o BeamMP-Server; then
+            echo "Error: Both GitHub and fallback server failed to download BeamMP binary."
+            exit 1
+        fi
+        
+        echo "Successfully downloaded from fallback server!"
+    else
+        echo "Successfully downloaded from GitHub!"
+    fi
 fi
 
 chmod +x BeamMP-Server
