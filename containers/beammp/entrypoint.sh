@@ -268,7 +268,7 @@ while [ ! -f "Resources/Server/RaspiHostUtilsLogs/.initialized" ]; do
   echo "Finishing initial server setup..."
   sleep 5
   touch Resources/Server/RaspiHostUtilsLogs/.initialized
-  echo "Rebooting..."
+  echo "Rebooting... If the panel says that I'm in a crashed state, try starting me again."
   sleep 1
   exit 1
 done
