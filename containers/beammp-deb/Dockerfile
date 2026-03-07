@@ -5,10 +5,10 @@ ENV          USER=container HOME=/home/container
 
 RUN          apt-get update \
              && apt-get install -y --no-install-recommends \
-             libc6 git wget curl iproute2 \
-             ca-certificates tzdata \
+             git wget curl iproute2 \
+             ca-certificates \
              libatomic1 libstdc++6 libssl3 \
-             liblua5.3-0 procps tini \
+             liblua5.3-0 tini \
              && apt-get clean \
              && rm -rf /var/lib/apt/lists/* \
              && useradd -m -d /home/container -s /bin/bash container \
