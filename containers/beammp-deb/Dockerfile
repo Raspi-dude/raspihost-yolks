@@ -2,7 +2,7 @@ FROM        debian:13.3-slim
 
 LABEL       author="Raspi_dude" maintainer="raspi@raspihost.org"
 
-RUN         apt update && apt upgrade -y && apt install -y ca-certificates tzdata iproute2 curl liblua5.4-0 ncurses git sqlite3 \
+RUN         apt update && apt upgrade -y && apt install -y ca-certificates tzdata iproute2 curl liblua5.4-0 libncurses6 git sqlite3 \
                                 && adduser -D -h /home/container container
 
 USER        container
