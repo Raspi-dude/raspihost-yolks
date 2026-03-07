@@ -2,7 +2,7 @@ FROM        alpine:3.23.3
 
 LABEL       author="Raspi_dude" maintainer="raspi@raspihost.org"
 
-RUN         apk add --update --no-cache ca-certificates tzdata iproute2 curl lua5.4 bash ncurses gcompat libstdc++ git sqlite-libs \
+RUN         apk add --update --no-cache ca-certificates tzdata iproute2 curl lua5.3 bash ncurses gcompat libstdc++ git sqlite-libs \
                                 && adduser -D -h /home/container container
 
 USER        container
